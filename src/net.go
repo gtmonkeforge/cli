@@ -27,14 +27,25 @@ func DownloadStream(url string) (io.ReadCloser, error) {
 	return DownloadStreamWithProgress(url, nil)
 }
 
-// DownloadStreamWithProgress reports bytes read.
-// total is -1 when the response length is unknown.
-// The caller must close the returned stream.
 func DownloadStreamWithProgress(
 	url string,
 	onProgress ProgressFunc,
 ) (io.ReadCloser, error) {
-	resp, err := http.Get(url)
+	var client *http.Client
+
+	if session != nil && session.Client != nil {
+		client = session.Client
+	} else {
+		client = http.DefaultClient
+	}
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

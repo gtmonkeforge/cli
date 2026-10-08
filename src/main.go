@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"os"
 
 	"github.com/pterm/pterm"
@@ -10,6 +12,8 @@ import (
 var infoStyle *pterm.Style
 var errStyle *pterm.Style
 var debugStyle *pterm.Style
+
+var session *Session
 
 var rootCmd = &cobra.Command{
 	Use:   "mforge",
@@ -82,6 +86,41 @@ var selectCmd = &cobra.Command{
 	},
 }
 
+var loginCmd = &cobra.Command{
+	Use:   "login",
+	Short: "Login to MonkeForge",
+
+	Run: func(cmd *cobra.Command, args []string) {
+		thisSession, err := Login(cmd.Context(), OpenBrowser)
+		if err != nil {
+			errStyle.Println(err)
+			os.Exit(1)
+		}
+
+		session = thisSession
+
+		pterm.Printf("Logged in")
+	},
+}
+
+var logoutCmd = &cobra.Command{
+	Use:   "logout",
+	Short: "Logout of MonkeForge",
+
+	Run: func(cmd *cobra.Command, args []string) {
+		thisSession, err := LoadSession(cmd.Context())
+
+		if errors.Is(err, ErrLoggedOut) {
+			errStyle.Println("Already logged out. Nothing to do")
+		} else if err != nil {
+			errStyle.Println(err)
+			os.Exit(0)
+		}
+
+		Logout(cmd.Context(), thisSession)
+	},
+}
+
 func main() {
 	infoStyle = pterm.NewStyle(pterm.FgBlue)
 	errStyle = pterm.NewStyle(pterm.FgRed, pterm.Bold)
@@ -103,8 +142,19 @@ func main() {
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(upgradeCmd)
+	rootCmd.AddCommand(loginCmd)
+	rootCmd.AddCommand(logoutCmd)
 	rootCmd.AddCommand(aboutCmd)
 	rootCmd.AddCommand(selectCmd)
+
+	var err error
+	session, err = LoadSession(context.Background())
+
+	if errors.Is(err, ErrLoggedOut) {
+		errStyle.Println("Already logged out. Nothing to do")
+	} else if err != nil {
+		errStyle.Println(err)
+	}
 
 	if err := rootCmd.Execute(); err != nil {
 		errStyle.Println(err)
