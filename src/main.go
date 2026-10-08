@@ -61,6 +61,17 @@ var upgradeCmd = &cobra.Command{
 	},
 }
 
+var aboutCmd = &cobra.Command{
+	Use:   "about [guids]",
+	Short: "View information about a GUID",
+
+	Args: cobra.ExactArgs(1),
+
+	Run: func(cmd *cobra.Command, args []string) {
+		about(args[0])
+	},
+}
+
 var selectCmd = &cobra.Command{
 	Use:   "select",
 	Short: "Re-find your Steam game path or input one manually",
@@ -92,6 +103,7 @@ func main() {
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(upgradeCmd)
+	rootCmd.AddCommand(aboutCmd)
 	rootCmd.AddCommand(selectCmd)
 
 	if err := rootCmd.Execute(); err != nil {

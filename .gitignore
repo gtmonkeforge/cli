@@ -33,5 +33,5 @@ go.work.sum
 # .vscode/
 
 # output binary
-mforge*
+bin
 .DS_Store
