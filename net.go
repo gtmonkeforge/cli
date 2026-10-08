@@ -19,6 +19,7 @@ func DownloadString(url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(data), nil
 }
 
@@ -38,7 +39,8 @@ func DownloadStreamWithProgress(
 		return nil, err
 	}
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+	// we handle 404s manually
+	if (resp.StatusCode < 200 || resp.StatusCode >= 300) && resp.StatusCode != 404 {
 		resp.Body.Close()
 		return nil, fmt.Errorf("download failed: %s", resp.Status)
 	}
