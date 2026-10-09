@@ -1,6 +1,19 @@
 # MonkeForge CLI
 `mforge` source code, a cross-platform CLI tool for interacting with [monkeforge](https://monkeforge.org) on your Gorilla Tag installs
 
+## Installation
+The CLI has install commands for both Windows 10/11 and Linux as shown on the [MonkeForge app](https://monkeforge.org/get-app) page. Copy the command for your system and the script will handle the rest:
+
+Windows (requires batch shell, run `cmd` if in PowerShell):
+```bat
+curl -sL "https://monkeforge.org/cli/setup.bat" | cmd
+```
+
+Linux:
+```sh
+curl -sL "https://monkeforge.org/cli/setup.sh" | bash
+```
+
 ## Basics
 ### `install`
 Install a package (MonkeFrames for example)
@@ -27,6 +40,20 @@ Upgrade all packages on the install
 ```sh
 mforge upgrade
 # accepts same arguments as `mforge install`
+```
+
+### `login`
+Log in to MonkeForge for downloading private mods and release channels:
+```sh
+mforge login
+# opens a browser for login, just hit Accept in Discord and that's all you have to do
+```
+
+### `logout`
+If logged in, you can logout. This is very helpful documentation.
+```
+mforge logout
+# you are now logged out yay
 ```
 
 ### `select`
